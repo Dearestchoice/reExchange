@@ -37,8 +37,8 @@ ReExchange is a cutting-edge crypto payment gateway designed to enable businesse
 
 
    ```bash
-   git clone https://github.com/your-username/payment-gateway-mvp.git
-   cd payment-gateway-mvp
+   git clone https://github.com/your-username/reExchange-mvp.git
+   cd reExchange-mvp
    
    
 ## Install dependencies:
