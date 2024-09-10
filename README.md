@@ -33,31 +33,37 @@ ReExchange is a cutting-edge crypto payment gateway designed to enable businesse
 - Reactive Network SDK or API
 
 ### Installation
+ Clone the repository:
 
-1. **Clone the repository:**
 
    ```bash
    git clone https://github.com/your-username/payment-gateway-mvp.git
    cd payment-gateway-mvp
-Install dependencies:
+   
+   
+## Install dependencies:
 
 bash
 Copy code
 npm install
-Set up your environment variables:
 
+## Set up your environment variables
 Create a .env file in the root directory and add the following:
 
 env
 Copy code
 REACT_APP_REACTIVE_NETWORK_API_KEY=your_api_key
-Compile and deploy smart contracts:
+
+
+## Compile and deploy smart contracts:
 
 bash
 Copy code
 npx hardhat compile
 npx hardhat run scripts/deploy.js --network reactive
-Start the development server:
+
+
+## Start the development server:
 
 bash
 Copy code
@@ -91,14 +97,17 @@ bash
 Copy code
 git add .
 git commit -m "Add your commit message"
-Push your changes to your forked repository:
+
+
+## Push your changes to your forked repository:
 
 bash
 Copy code
 git push origin feature/your-feature
+
 Open a Pull Request on GitHub and describe your changes.
 
-License
+## License
 This project is licensed under the MIT License.
 
 Thank you for using and contributing to the Payment Gateway MVP!
