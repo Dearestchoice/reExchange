@@ -9,7 +9,7 @@ import SettingsPage from "./pages/SettingsPage";
 
 function App() {
    return (
-      <div className="bg-[#0D0D0D] text-white min-h-screen flex flex-row">
+      <div className="bg-white dark:bg-[#0D0D0D] text-[#0D0D0D] dark:text-white min-h-screen flex flex-row">
          <Sidebar />
          <div className="flex-1 mx-4">
             <Routes>
