@@ -5,6 +5,7 @@ export default {
       extend: {
          fontFamily: {
             grotesk: ["Space Grotesk", "sans-serif"],
+            orbitron: ['Orbitron', 'sans-serif']
          },
       },
    },
