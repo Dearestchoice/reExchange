@@ -1,11 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
+   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+   darkMode: 'class',
+   theme: {
+      extend: {
+         fontFamily: {
+            grotesk: ["Space Grotesk", "sans-serif"],
+            orbitron: ['Orbitron', 'sans-serif']
+         },
+      },
+   },
+   plugins: [],
+};
