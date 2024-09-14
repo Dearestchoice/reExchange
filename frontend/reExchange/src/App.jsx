@@ -11,7 +11,7 @@ function App() {
    return (
       <div className="bg-white dark:bg-[#0D0D0D] text-[#0D0D0D] dark:text-white min-h-screen flex flex-row">
          <Sidebar />
-         <div className="flex-1 mx-4">
+         <div className="bg-[#FFFFFF0A] flex-1">
             <Routes>
                <Route path="" Component={DashboardPage} />
                <Route path="conversion" Component={ConversionPage} />

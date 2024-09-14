@@ -6,7 +6,7 @@ import { MdLightMode } from "react-icons/md";
 import { MdDarkMode } from "react-icons/md";
 import { ThemeContext } from "../../contexts/ThemeContext";
 
-const DashboardHeader = () => {
+const DashboardHeader = ({ title }) => {
    const { toggleTheme, theme } = useContext(ThemeContext);
 
    const handleSearch = (searchTerm) => {
@@ -14,11 +14,9 @@ const DashboardHeader = () => {
    };
 
    return (
-      <header className="relative">
+      <header className="p-4 py-10 bg-white dark:bg-[#0D0D0D] text-[#0D0D0D] dark:text-white  relative">
          <div className="flex gap-4 items-center justify-between">
-            <h2 className="font-orbitron text-[22px] font-semibold">
-               Dashboard
-            </h2>
+            <h2 className="font-orbitron text-[22px] font-semibold">{title}</h2>
             <SearchInput
                placeHolder="Search transactions by ID, amount, or date"
                onSearch={handleSearch}
@@ -28,14 +26,17 @@ const DashboardHeader = () => {
             </Button>
             <Button>Convert</Button>
 
-            <Button className="absolute -right-8 border-none p-0 m-0" onClick={toggleTheme}>
-               {theme === "light" ? <MdDarkMode title="switch to darkmode " /> : <MdLightMode title="switch to lightmode " />}
+            <Button className="border-none p-0 m-0" onClick={toggleTheme}>
+               {theme === "light" ? (
+                  <MdDarkMode title="switch to darkmode " />
+               ) : (
+                  <MdLightMode title="switch to lightmode " />
+               )}
             </Button>
 
-            <div className="mr-3">
+            <div>
                <img src={profile} alt="" className="cursor-pointer h-6 w-6" />
             </div>
-
          </div>
       </header>
    );

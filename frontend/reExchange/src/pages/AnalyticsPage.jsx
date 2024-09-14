@@ -1,8 +1,11 @@
 import React from 'react'
+import DashboardHeader from '../components/dashboard/DashboardHeader'
 
 const AnalyticsPage = () => {
   return (
-    <div>AnalyticsPage</div>
+    <div className=''>
+      <DashboardHeader title={"Activity"} />
+    </div>
   )
 }
 
