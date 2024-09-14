@@ -11,7 +11,7 @@ import { MdOutlineSettings } from "react-icons/md";
 const Sidebar = () => {
    return (
       <div className="p-11 border-r border-[#4C4C4C]">
-         <div className="flex mb-10 items-center gap-16 justify-between">
+         <div className="flex mb-12  items-center gap-16 justify-between">
             <img
                className=" "
                src={logo}
@@ -20,23 +20,35 @@ const Sidebar = () => {
             />
          </div>
 
-         <div className="main-links flex flex-col justify-center items-center">
+         <div className="main-links flex gap-y-4 flex-col justify-center">
             <NavLink to="">
-               <SidebarButton word={"Dashboard"} icon={<MdDashboard size={18} />} />
+               <SidebarButton
+                  word={"Dashboard"}
+                  icon={<MdDashboard size={18} />}
+               />
             </NavLink>
             <NavLink to="conversion">
-               <SidebarButton word={"Conversion"} icon={<FaExchangeAlt size={18} />} />
+               <SidebarButton
+                  word={"Conversion"}
+                  icon={<FaExchangeAlt size={18} />}
+               />
             </NavLink>
             <NavLink to="analytics">
-               <SidebarButton word={"Analytics"} icon={<GrAnalytics size={18} />} />
+               <SidebarButton
+                  word={"Analytics"}
+                  icon={<GrAnalytics size={18} />}
+               />
             </NavLink>
             <NavLink to="payments">
                <SidebarButton word={"Payments"} icon={<FaWallet size={18} />} />
             </NavLink>
-            <NavLink to="settings">
-               <SidebarButton word={"Settings"} icon={<MdOutlineSettings size={18} />} />
+
+            <NavLink to="settings" className="mt-32">
+               <SidebarButton
+                  word={"Settings"}
+                  icon={<MdOutlineSettings size={18} />}
+               />
             </NavLink>
-           
          </div>
       </div>
    );
