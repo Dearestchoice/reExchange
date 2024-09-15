@@ -33,6 +33,10 @@ const DashboardPage = () => {
                   imgSrc={wallet}
                />
             </div>
+
+            <div>
+               This is from my branch
+            </div>
          </main>
       </div>
    );
