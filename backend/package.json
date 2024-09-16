@@ -1,0 +1,28 @@
+{
+  "name": "rexchange",
+  "version": "1.0.0",
+  "description": "ReExchange is a cutting-edge crypto payment gateway designed to enable businesses to accept cryptocurrency payments seamlessly. Built on the Reactive Network, it offers fast, scalable, and secure transactions for a wide range of cryptocurrencies, with optional fiat conversion and real-time notifications.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hackathon",
+    "smart-contracts",
+    "blockchain"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemon": "^3.1.4"
+  },
+  "devDependencies": {
+    "eslint": "^9.10.0"
+  }
+}
