@@ -5,6 +5,7 @@ import  hourGlass  from "../assets/images/hourGlass.png";
 import  wallet  from "../assets/images/wallet.png";
 import  coinExchange  from "../assets/images/coinExchange.png";
 import  totalCoins  from "../assets/images/totalCoins.png";
+import DashboardChart from "../components/DashboardChart";
 
 const DashboardPage = () => {
    return (
@@ -33,6 +34,10 @@ const DashboardPage = () => {
                   imgSrc={wallet}
                />
             </div>
+
+         <div  className="  md:flex justify-evenly my-8">
+               <DashboardChart />
+         </div>
          </main>
       </div>
    );
