@@ -2,11 +2,12 @@
 pragma solidity ^0.8.20;
 
 import "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+import "@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol"; // Import Chainlink Keepers interface
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract PaymentGateway is Ownable, ReentrancyGuard {
+contract ReactivePaymentGateway is Ownable, ReentrancyGuard, AutomationCompatibleInterface {
     // State variables
     AggregatorV3Interface internal priceFeed;
     address public merchant;
@@ -14,18 +15,30 @@ contract PaymentGateway is Ownable, ReentrancyGuard {
     
     // Mapping to track payment confirmations
     mapping(bytes32 => bool) public paymentConfirmed;
-
+    
+    // Timers and thresholds for automation
+    uint256 public lastFeeUpdateTime;
+    uint256 public feeUpdateInterval; // Time interval for fee updates
+    
     // Events
     event PaymentReceived(address indexed payer, address token, uint256 amount, uint256 fiatValue);
     event PaymentLinkGenerated(address indexed merchant, string paymentLink, uint256 amount, string currency);
     event FeePercentageUpdated(uint256 newFeePercentage);
     event PaymentConfirmed(bytes32 indexed paymentId);
+    event MissedPaymentNotification(address indexed payer, uint256 amountDue, string reason);
 
-constructor(address _priceFeed, address _merchant, uint256 _feePercentage) Ownable(msg.sender) {
-    priceFeed = AggregatorV3Interface(_priceFeed);
-    merchant = _merchant;
-    feePercentage = _feePercentage;
-}
+    constructor(
+        address _priceFeed, 
+        address _merchant, 
+        uint256 _feePercentage, 
+        uint256 _feeUpdateInterval
+    ) Ownable(_merchant) {
+        priceFeed = AggregatorV3Interface(_priceFeed);
+        merchant = _merchant;
+        feePercentage = _feePercentage;
+        lastFeeUpdateTime = block.timestamp;
+        feeUpdateInterval = _feeUpdateInterval;
+    }
 
     // Public function to receive payments in ERC20 tokens (USDT, USDC)
     function payWithToken(address token, uint256 tokenAmount) external nonReentrant {
@@ -58,7 +71,12 @@ constructor(address _priceFeed, address _merchant, uint256 _feePercentage) Ownab
 
     // Function to generate a payment link for a specific amount and currency
     function generatePaymentLink(uint256 amount, string calldata currency) external onlyOwner returns (string memory) {
-        string memory paymentLink = string(abi.encodePacked("https://paywithcrypto.com/link?merchant=", toAsciiString(merchant), "&amount=", uint2str(amount), "&currency=", currency));
+        string memory paymentLink = string(abi.encodePacked(
+            "https://paywithcrypto.com/link?merchant=", 
+            toAsciiString(merchant), 
+            "&amount=", uint2str(amount), 
+            "&currency=", currency
+        ));
         
         emit PaymentLinkGenerated(merchant, paymentLink, amount, currency);
         return paymentLink;
@@ -71,6 +89,25 @@ constructor(address _priceFeed, address _merchant, uint256 _feePercentage) Ownab
         emit FeePercentageUpdated(newFeePercentage);
     }
 
+    // Automation: Chainlink Keepers to automate fee updates or trigger events
+    // Updated checkUpkeep function with return value and view modifier
+    function checkUpkeep(bytes calldata /* checkData */) external view override returns (bool upkeepNeeded, bytes memory /* performData */) {
+    upkeepNeeded = (block.timestamp - lastFeeUpdateTime) > feeUpdateInterval;
+    // Since performData is not used, you can return an empty byte array
+    return (upkeepNeeded, bytes(""));
+}
+
+
+    function performUpkeep(bytes calldata /* performData */) external override {
+        if ((block.timestamp - lastFeeUpdateTime) > feeUpdateInterval) {
+            // Logic to automatically update the fee percentage
+            // Example: Auto-lower fees based on certain logic
+            feePercentage = feePercentage > 50 ? feePercentage - 50 : feePercentage;
+            lastFeeUpdateTime = block.timestamp;
+            emit FeePercentageUpdated(feePercentage);
+        }
+    }
+
     // Callback function for off-chain services
     function callback(bytes32 paymentId, bool confirmed) external onlyOwner {
         // Logic for confirming a payment
@@ -81,6 +118,11 @@ constructor(address _priceFeed, address _merchant, uint256 _feePercentage) Ownab
 
         // Emit an event for the payment confirmation
         emit PaymentConfirmed(paymentId);
+    }
+
+    // Missed payments or underpayment notifications
+    function notifyMissedPayment(address payer, uint256 amountDue, string memory reason) external onlyOwner {
+        emit MissedPaymentNotification(payer, amountDue, reason);
     }
 
     // Utility function to convert address to string
