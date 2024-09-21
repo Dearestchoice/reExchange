@@ -23,7 +23,7 @@ contract PaymentGateway is Ownable, ReentrancyGuard {
         feePercentage = _feePercentage;
     }
 
-    // Public function to receive payments in ERC20 tokens (e.g., USDT, USDC)
+    // Public function to receive payments in ERC20 tokens (USDT, USDC)
     function payWithToken(address token, uint256 tokenAmount) external nonReentrant {
         require(tokenAmount > 0, "Amount must be greater than 0");
 
