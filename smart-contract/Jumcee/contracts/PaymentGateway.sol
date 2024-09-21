@@ -21,12 +21,11 @@ contract PaymentGateway is Ownable, ReentrancyGuard {
     event FeePercentageUpdated(uint256 newFeePercentage);
     event PaymentConfirmed(bytes32 indexed paymentId);
 
-constructor(address _priceFeed, address _merchant, uint256 _feePercentage) Ownable() {
+constructor(address _priceFeed, address _merchant, uint256 _feePercentage) Ownable(msg.sender) {
     priceFeed = AggregatorV3Interface(_priceFeed);
     merchant = _merchant;
     feePercentage = _feePercentage;
 }
-
 
     // Public function to receive payments in ERC20 tokens (USDT, USDC)
     function payWithToken(address token, uint256 tokenAmount) external nonReentrant {
