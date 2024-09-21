@@ -12,16 +12,21 @@ contract PaymentGateway is Ownable, ReentrancyGuard {
     address public merchant;
     uint256 public feePercentage; // In basis points, e.g., 100 = 1%
     
+    // Mapping to track payment confirmations
+    mapping(bytes32 => bool) public paymentConfirmed;
+
     // Events
     event PaymentReceived(address indexed payer, address token, uint256 amount, uint256 fiatValue);
     event PaymentLinkGenerated(address indexed merchant, string paymentLink, uint256 amount, string currency);
+    event FeePercentageUpdated(uint256 newFeePercentage);
+    event PaymentConfirmed(bytes32 indexed paymentId);
 
-    // Constructor: set the Chainlink price feed, merchant address, and fee percentage
-    constructor(address _priceFeed, address _merchant, uint256 _feePercentage) Ownable(_merchant) {
-        priceFeed = AggregatorV3Interface(_priceFeed);
-        merchant = _merchant;
-        feePercentage = _feePercentage;
-    }
+constructor(address _priceFeed, address _merchant, uint256 _feePercentage) Ownable() {
+    priceFeed = AggregatorV3Interface(_priceFeed);
+    merchant = _merchant;
+    feePercentage = _feePercentage;
+}
+
 
     // Public function to receive payments in ERC20 tokens (USDT, USDC)
     function payWithToken(address token, uint256 tokenAmount) external nonReentrant {
@@ -64,6 +69,19 @@ contract PaymentGateway is Ownable, ReentrancyGuard {
     function setFeePercentage(uint256 newFeePercentage) external onlyOwner {
         require(newFeePercentage <= 1000, "Fee cannot exceed 10%");
         feePercentage = newFeePercentage;
+        emit FeePercentageUpdated(newFeePercentage);
+    }
+
+    // Callback function for off-chain services
+    function callback(bytes32 paymentId, bool confirmed) external onlyOwner {
+        // Logic for confirming a payment
+        require(!paymentConfirmed[paymentId], "Payment already confirmed");
+        
+        // Mark the payment as confirmed
+        paymentConfirmed[paymentId] = confirmed;
+
+        // Emit an event for the payment confirmation
+        emit PaymentConfirmed(paymentId);
     }
 
     // Utility function to convert address to string
