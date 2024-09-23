@@ -5,7 +5,7 @@ const {
   generateRefreshToken,
   verifyRefreshToken,
 } = require("../utils/jwt");
-const { registrationSchema, loginSchema } = require("../utils/schema");
+const { registrationSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema } = require("../utils/schema");
 const bcrypt = require("bcrypt");
 
 const registerUser = async (req, res) => {
@@ -109,57 +109,57 @@ const refreshToken = async (req, res) => {
   res.status(200).json({ accessToken: newAccessToken });
 };
 
-const forgetPassword = async () => {
-  try {
-    // Validate email
-    await forgotPasswordSchema.validate(req.body);
+// const forgetPassword = async () => {
+//   try {
+//     // Validate email
+//     const data = await forgotPasswordSchema.validate(req.body);
 
-    // Find the user by email
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) return res.status(400).json({ message: "User not found" });
+//     // Find the user by email
+//     const user = await User.findOne({ email: data.value.email });
+//     if (!user) return res.status(400).json({ message: "User not found" });
 
-    // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    user.otp = otp;
-    user.otpExpiry = Date.now() + 15 * 60 * 1000; // OTP expires in 15 minutes
+//     // Generate OTP
+//     const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//     user.otp = otp;
+//     user.otpExpiry = Date.now() + 15 * 60 * 1000; // OTP expires in 15 minutes
 
-    await user.save();
+//     await user.save();
 
-    // Send OTP via email (implement email sending logic)
-    sendEmail(user.email, `Your OTP is: ${otp}`); // Implement sendEmail
+//     // Send OTP via email (implement email sending logic)
+//     sendEmail(user.email, `Your OTP is: ${otp}`); // Implement sendEmail
 
-    res.status(200).json({ message: "OTP sent to your email" });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+//     res.status(200).json({ message: "OTP sent to your email" });
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// };
 
-const verifyOtpUpdatePassword = async () => {
-  try {
-    // Validate input
-    await resetPasswordSchema.validate(req.body);
+// const verifyOtpUpdatePassword = async () => {
+//   try {
+//     // Validate input
+//     await resetPasswordSchema.validate(req.body);
 
-    const { otp, newPassword } = req.body;
+//     const { otp, newPassword } = req.body;
 
-    // Find user with the OTP and check if OTP is not expired
-    const user = await User.findOne({ otp, otpExpiry: { $gt: Date.now() } });
-    if (!user)
-      return res.status(400).json({ message: "Invalid or expired OTP" });
+//     // Find user with the OTP and check if OTP is not expired
+//     const user = await User.findOne({ otp, otpExpiry: { $gt: Date.now() } });
+//     if (!user)
+//       return res.status(400).json({ message: "Invalid or expired OTP" });
 
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+//     // Hash the new password
+//     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update password and clear OTP
-    user.password = hashedPassword;
-    user.otp = undefined;
-    user.otpExpiry = undefined;
+//     // Update password and clear OTP
+//     user.password = hashedPassword;
+//     user.otp = undefined;
+//     user.otpExpiry = undefined;
 
-    await user.save();
+//     await user.save();
 
-    res.status(200).json({ message: "Password updated successfully" });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+//     res.status(200).json({ message: "Password updated successfully" });
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// };
 
 module.exports = { registerUser, loginUser, refreshToken };
