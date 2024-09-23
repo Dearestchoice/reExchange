@@ -40,8 +40,9 @@ npm install
 
 ### Get a mongodb atlas database url
 
-### Run Database Migrations
+### Seed database with test data
 ```
+Coming soon...
 ```
 
 ### Run the backend Server
