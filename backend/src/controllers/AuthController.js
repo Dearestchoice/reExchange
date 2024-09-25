@@ -5,7 +5,12 @@ const {
   generateRefreshToken,
   verifyRefreshToken,
 } = require("../utils/jwt");
-const { registrationSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema } = require("../utils/schema");
+const {
+  registrationSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+} = require("../utils/schema");
 const bcrypt = require("bcrypt");
 
 const registerUser = async (req, res) => {
@@ -109,57 +114,85 @@ const refreshToken = async (req, res) => {
   res.status(200).json({ accessToken: newAccessToken });
 };
 
-// const forgetPassword = async () => {
-//   try {
-//     // Validate email
-//     const data = await forgotPasswordSchema.validate(req.body);
+const forgetPassword = async (req, res) => {
+  try {
+    // Validate email
+    const data = await forgotPasswordSchema.validate(req.body);
+    if (data.error) {
+      return res
+        .status(400)
+        .json({ status: "FAILED", message: data.error.message });
+    }
 
-//     // Find the user by email
-//     const user = await User.findOne({ email: data.value.email });
-//     if (!user) return res.status(400).json({ message: "User not found" });
+    // Find the user by email
+    const user = await User.findOne({ email: data.value.email });
+    if (!user) {
+      return res.status(400).json({
+        status: "FAILED",
+        message: "User not found, please signup instead.",
+      });
+    }
 
-//     // Generate OTP
-//     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-//     user.otp = otp;
-//     user.otpExpiry = Date.now() + 15 * 60 * 1000; // OTP expires in 15 minutes
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expirationTime = Date.now() + 15 * 60 * 1000; // OTP expires in 15 minutes
 
-//     await user.save();
+    // Update user with OTP and expiration
+    user.otp = otp;
+    user.otpExpiry = expirationTime;
 
-//     // Send OTP via email (implement email sending logic)
-//     sendEmail(user.email, `Your OTP is: ${otp}`); // Implement sendEmail
+    await user.save();
 
-//     res.status(200).json({ message: "OTP sent to your email" });
-//   } catch (error) {
-//     res.status(400).json({ message: error.message });
-//   }
-// };
+    // Send OTP via email (implement email sending logic)
+    sendEmail(user.email, `Your OTP is: ${otp}`);
 
-// const verifyOtpUpdatePassword = async () => {
-//   try {
-//     // Validate input
-//     await resetPasswordSchema.validate(req.body);
+    return res.status(200).json({ message: "OTP sent successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ status: "FAILED", message: error.message });
+  }
+};
 
-//     const { otp, newPassword } = req.body;
+const verifyOtpUpdatePassword = async (req, res) => {
+  try {
+    const data = await resetPasswordSchema.validate(req.body);
+    if (data.error) {
+      return res
+        .status(400)
+        .json({ status: "FAILED", message: data.error.message });
+    }
 
-//     // Find user with the OTP and check if OTP is not expired
-//     const user = await User.findOne({ otp, otpExpiry: { $gt: Date.now() } });
-//     if (!user)
-//       return res.status(400).json({ message: "Invalid or expired OTP" });
+    // Find the OTP entry and ensure it has not expired
+    const otpEntry = await Otp.findOne({
+      otp: data.value.otp,
+      expiresAt: { $gt: new Date() }, // Check for OTP that hasn't expired
+    }).populate("user"); // Populate the related user
 
-//     // Hash the new password
-//     const hashedPassword = await bcrypt.hash(newPassword, 10);
+    if (!otpEntry) {
+      return res
+        .status(400)
+        .json({ status: "FAILED", message: "Invalid or expired OTP" });
+    }
 
-//     // Update password and clear OTP
-//     user.password = hashedPassword;
-//     user.otp = undefined;
-//     user.otpExpiry = undefined;
+    // Extract the user from the OTP entry
+    const user = otpEntry.user;
 
-//     await user.save();
+    // Hash the new password
+    const hashedPassword = await hashPassword(data.value.newPassword);
 
-//     res.status(200).json({ message: "Password updated successfully" });
-//   } catch (error) {
-//     res.status(400).json({ message: error.message });
-//   }
-// };
+    // Update password and clear OTP
+    user.password = hashedPassword;
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    await user.save();
+
+    return res.status(200).json({
+      status: "SUCCESS",
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    res.status(400).json({ status: "FAILED", message: error.message });
+  }
+};
 
 module.exports = { registerUser, loginUser, refreshToken };
