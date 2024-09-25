@@ -153,7 +153,7 @@ const forgetPassword = async (req, res) => {
   }
 };
 
-const verifyOtpUpdatePassword = async (req, res) => {
+const verifyOtpResetPassword = async (req, res) => {
   try {
     const data = await resetPasswordSchema.validate(req.body);
     if (data.error) {
@@ -195,4 +195,4 @@ const verifyOtpUpdatePassword = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, refreshToken };
+module.exports = { registerUser, loginUser, refreshToken, forgetPassword, verifyOtpResetPassword };
